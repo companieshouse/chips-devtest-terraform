@@ -142,3 +142,22 @@ variable "enable_sns_topic" {
   description = "A boolean value to indicate whether to deploy SNS topic configuration for CloudWatch actions"
   default     = false
 }
+
+# ------------------------------------------------------------------------------
+# ALB Variables
+# ------------------------------------------------------------------------------
+
+variable "application_health_check_path" {
+  type        = string
+  default     = "/chips/cff"
+  description = "Target group health check path for application"
+}
+
+# ------------------------------------------------------------------------------
+# Environments
+# ------------------------------------------------------------------------------
+variable "environments" {
+  type        = list(map(string))
+  description = "List of environments to configure log groups, listener rules and friendly DNS entries for"
+  default     = []
+}

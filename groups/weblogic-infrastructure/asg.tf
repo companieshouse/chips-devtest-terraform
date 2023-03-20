@@ -16,16 +16,16 @@ module "asg_security_group" {
 }
 
 resource "aws_security_group_rule" "ssh_from_chips_control" {
-  description       = "SSH from chips-control"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  type              = "ingress"
+  description              = "SSH from chips-control"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  type                     = "ingress"
   source_security_group_id = data.aws_security_group.chips_control.id
-  security_group_id = module.asg_security_group.security_group_id
+  security_group_id        = module.asg_security_group.security_group_id
 }
 
-resource "aws_security_group_rule" "http_tux_to_chips" {
+resource "aws_security_group_rule" "http_tux_from_admin_subnets" {
   description       = "HTTP and tux from admin ips"
   from_port         = 20100
   to_port           = 22075
@@ -33,6 +33,16 @@ resource "aws_security_group_rule" "http_tux_to_chips" {
   type              = "ingress"
   prefix_list_ids   = [data.aws_ec2_managed_prefix_list.administration.id]
   security_group_id = module.asg_security_group.security_group_id
+}
+
+resource "aws_security_group_rule" "http_from_alb" {
+  description              = "HTTP from ALB"
+  from_port                = 20100
+  to_port                  = 22075
+  protocol                 = "tcp"
+  type                     = "ingress"
+  source_security_group_id = module.internal_alb_security_group.security_group_id
+  security_group_id        = module.asg_security_group.security_group_id
 }
 
 # ASG Module
@@ -75,6 +85,7 @@ module "asg" {
   refresh_triggers               = ["launch_configuration"]
   key_name                       = aws_key_pair.keypair.key_name
   termination_policies           = ["OldestLaunchConfiguration"]
+  target_group_arns              = module.internal_alb.target_group_arns
   
   iam_instance_profile = module.instance_profile.aws_iam_instance_profile.name
   user_data_base64     = data.template_cloudinit_config.userdata_config.rendered

@@ -14,6 +14,11 @@ data "aws_subnet_ids" "application" {
   }
 }
 
+data "aws_subnet" "application" {
+  for_each = data.aws_subnet_ids.application.ids
+  id       = each.value
+}
+
 data "aws_route53_zone" "private_zone" {
   name         = local.internal_fqdn
   private_zone = true
@@ -29,6 +34,14 @@ data "vault_generic_secret" "account_ids" {
 
 data "aws_ec2_managed_prefix_list" "administration" {
   name = "administration-cidr-ranges"
+}
+
+data "vault_generic_secret" "chs_cidrs" {
+  path = "/aws-accounts/network/${var.aws_account}/chs/application-subnets"
+}
+
+data "vault_generic_secret" "test_cidrs" {
+  path = "aws-accounts/network/shared-services/test_cidr_ranges"
 }
 
 data "aws_security_group" "chips_control" {
