@@ -21,7 +21,7 @@ locals {
 
   #For each log map passed, add an extra kv for the log group name and append the NFS directory into the filepath where required
   log_directory_prefix = format("%s/%s", var.nfs_mount_destination_parent_dir, lookup(local.nfs_mounts["application_root"], "local_mount_point", ""))
-  cloudwatch_logs = {
+  cloudwatch_instance_logs = {
     for log, map in var.cloudwatch_logs :
     log => merge(map, {
       "log_group_name" = "${var.application}-${log}",
@@ -29,6 +29,19 @@ locals {
       }
     )
   }
+
+  cloudwatch_weblogic_logs = {
+    for env in var.environments : 
+    env.name => {
+      log_group_name      = "${var.application}-${env.name}-wlserver1-out"
+      file_path           = "${local.log_directory_prefix}/${env.name}/running-servers/wlserver1/logs"
+      file_name           = "wlserver1.out"
+      log_group_retention = 7
+    }    
+  }
+
+  cloudwatch_logs = merge(local.cloudwatch_instance_logs, local.cloudwatch_weblogic_logs)
+
   # Extract the log group names for easier iteration
   log_groups = compact([for log, map in local.cloudwatch_logs : lookup(map, "log_group_name", "")])
 
