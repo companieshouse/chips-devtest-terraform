@@ -39,19 +39,24 @@ module "internal_alb" {
     {
       port               = 80
       protocol           = "HTTP"
-      target_group_index = 0
+
+      action_type  = "fixed-response"
+      fixed_response = {
+        status_code  = "503"
+        content_type = "text/plain"
+      }
     }
   ]
 
   http_tcp_listener_rules = [ 
-    for env in var.environments : {
+    for index, env in var.environments : {
       http_tcp_listener_index = 0
       priority                = env.number
 
       actions = [
         {
           type               = "forward"
-          target_group_index = (env.number)-1
+          target_group_index = index
           weight             = 100
         }
       ]

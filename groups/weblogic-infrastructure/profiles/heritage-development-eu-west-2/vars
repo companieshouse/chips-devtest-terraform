@@ -54,11 +54,11 @@ cloudwatch_logs = {
 }
 
 # List of dev/test/training environments
-# Add an entry here if you need a friendly URL or cloudwatch access to the Weblogic log
+# Add an entry to the end of the list, if you need a friendly URL or cloudwatch access to the Weblogic log
 # The number must match the ENV_NUMBER env var in the S3 properties file and be unique.
 environments = [
   {
-    name = "blarney"
+    name = "csi"
     number = "01"
   },
   {
@@ -68,5 +68,9 @@ environments = [
   {
     name = "training2"
     number = "03"
+  },
+  {
+    name = "cidev"
+    number = "04"
   }
 ]
