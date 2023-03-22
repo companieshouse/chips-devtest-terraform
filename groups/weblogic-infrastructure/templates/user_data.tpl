@@ -17,5 +17,5 @@ echo '${ANSIBLE_INPUTS}' | jq --arg APP_INSTANCE_NAME "$APP_INSTANCE_NAME"  'wal
 #Upsert a Route53 DNS record for this EC2 instance
 /usr/local/bin/update-dns.sh ${DNS_ZONE_ID} "$APP_INSTANCE_NAME.${DNS_DOMAIN}"
 
-#Run bootstrap script to download config from S3 and start Docker containers
-#su -l ec2-user bootstrap
+#Run multi-bootstrap script to download configs from S3 and start multiple Docker environments
+su -l ec2-user multi-bootstrap
