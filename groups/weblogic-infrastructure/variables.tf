@@ -52,11 +52,6 @@ variable "application" {
   description = "The component name of the application"
 }
 
-variable "environment" {
-  type        = string
-  description = "The name of the environment"
-}
-
 variable "application_type" {
   type        = string
   default     = "chips"

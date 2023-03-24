@@ -9,7 +9,6 @@ region  = "euw2"
 
 # Application details
 application = "chips-devtest"
-environment = "development"
 
 # ASG settings
 asg_count = 1

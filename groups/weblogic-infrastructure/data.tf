@@ -96,7 +96,6 @@ data "template_file" "userdata" {
     ANSIBLE_INPUTS             = jsonencode(local.userdata_ansible_inputs)
     DNS_DOMAIN                 = local.internal_fqdn
     DNS_ZONE_ID                = data.aws_route53_zone.private_zone.zone_id
-    HERITAGE_ENVIRONMENT       = title(var.environment)
   }
 }
 
