@@ -52,6 +52,7 @@ locals {
     cw_namespace         = var.cloudwatch_namespace
     cw_asg_level_metrics = "true"
     s3_bucket_configs    = local.s3_releases["config_bucket_name"]
+    crontab_filename     = "dev-crontab.txt"
   }
 
   iprocess_tnsnames_inputs = {
