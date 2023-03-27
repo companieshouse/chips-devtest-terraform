@@ -67,7 +67,7 @@ resource "aws_security_group_rule" "db_events_from_rds" {
 
 # ASG Module
 module "asg" {
-  source = "./autoscaling-with-launch-template"
+  source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.184"
 
   count = var.asg_count
 
