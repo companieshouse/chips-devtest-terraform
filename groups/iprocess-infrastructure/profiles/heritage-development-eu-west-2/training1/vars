@@ -13,7 +13,7 @@ environment = "training1"
 
 # ASG settings
 asg_count = 1
-instance_size = "z1d.3xlarge"
+instance_size = "r5.large"
 enable_instance_refresh = true
 
 cloudwatch_logs = {
