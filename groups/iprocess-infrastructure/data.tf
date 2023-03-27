@@ -57,10 +57,6 @@ data "vault_generic_secret" "security_s3_buckets" {
   path = "aws-accounts/security/s3"
 }
 
-data "vault_generic_secret" "chs_vpc_subnets" {
-  path = "aws-accounts/${var.environment}/vpc/subnets"
-}
-
 data "vault_generic_secret" "iprocess_app_ec2_data" {
   path = "applications/${var.aws_account}-${var.aws_region}/${var.application}/app/ec2"
 }
