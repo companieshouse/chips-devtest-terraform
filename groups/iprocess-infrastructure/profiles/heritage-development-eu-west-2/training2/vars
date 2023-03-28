@@ -1,0 +1,66 @@
+# Account details
+aws_profile = "heritage-development-eu-west-2"
+aws_region  = "eu-west-2"
+aws_account = "heritage-development"
+
+# Account shorthand
+account = "hdev"
+region  = "euw2"
+
+# Application details
+application = "iprocess-app"
+environment = "training2"
+
+# ASG settings
+asg_count = 1
+instance_size = "r5.large"
+enable_instance_refresh = true
+
+cloudwatch_logs = {
+  "audit.log" = {
+    file_path = "/var/log/audit"
+    log_group_retention = 7
+  }
+
+  "messages" = {
+    file_path = "/var/log"
+    log_group_retention = 7
+  }
+  
+  "secure" = {
+    file_path = "/var/log"
+    log_group_retention = 7
+  }
+
+  "yum.log" = {
+    file_path = "/var/log"
+    log_group_retention = 7
+  }
+
+  "ssm-errors" = {
+    file_path = "/var/log/amazon/ssm"
+    file_name = "errors.log"
+    log_group_retention = 7
+  }
+
+  "ssm-agent" = {
+    file_path = "/var/log/amazon/ssm"
+    file_name = "amazon-ssm-agent.log"
+    log_group_retention = 7
+  }
+
+  "sw_warn.log" = {
+    file_path = "/app/iProcess/11_8/logs"
+    log_group_retention = 7
+  }
+
+  "sw_error.log" = {
+    file_path = "/app/iProcess/11_8/logs"
+    log_group_retention = 7
+  }
+
+  "ch_support_alert.log" = {
+    file_path = "/app/iProcess/11_8/logs"
+    log_group_retention = 7
+  }
+}
