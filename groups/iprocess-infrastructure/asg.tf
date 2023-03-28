@@ -77,7 +77,6 @@ module "asg" {
   lt_name       = format("%s-%s-%s-launchtemplate", var.application, var.environment, count.index)
   image_id      = data.aws_ami.iprocess_app.id
   instance_type = var.instance_size
-  core_count    = 2
   security_groups = [
     module.asg_security_group.security_group_id
   ]
