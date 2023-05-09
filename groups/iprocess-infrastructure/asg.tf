@@ -5,8 +5,8 @@ module "asg_security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.3"
 
-  name        = "sgr-${var.application}-asg-001"
-  description = "Security group for the ${var.application} asg"
+  name        = "sgr-${var.application}-${var.environment}-asg-001"
+  description = "Security group for the ${var.application} ${var.environment} asg"
   vpc_id      = data.aws_vpc.vpc.id
 
   ingress_rules       = ["ssh-tcp"]
