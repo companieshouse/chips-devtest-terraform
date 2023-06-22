@@ -129,7 +129,7 @@ variable "cloudwatch_logs" {
 variable "config_bucket_name" {
   type        = string
   description = "Bucket name the application will use to retrieve configuration files"
-  default     = "heritage-development.eu-west-2.configs.gov.uk"
+  default     = "heritage-development.eu-west-2.configs.ch.gov.uk"
 }
 
 variable "enable_sns_topic" {
