@@ -45,6 +45,16 @@ resource "aws_security_group_rule" "http_from_alb" {
   security_group_id        = module.asg_security_group.security_group_id
 }
 
+resource "aws_security_group_rule" "http_from_chips_control" {
+  description              = "HTTP from chips-control"
+  from_port                = 20100
+  to_port                  = 22075
+  protocol                 = "tcp"
+  type                     = "ingress"
+  source_security_group_id = data.aws_security_group.chips_control.id
+  security_group_id        = module.asg_security_group.security_group_id
+}
+
 # ASG Module
 module "asg" {
   source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.184"
