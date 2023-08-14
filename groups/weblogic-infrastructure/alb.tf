@@ -7,7 +7,7 @@ module "internal_alb_security_group" {
   vpc_id      = data.aws_vpc.vpc.id
 
   ingress_prefix_list_ids  = [data.aws_ec2_managed_prefix_list.administration.id]
-  ingress_rules       = ["http-80-tcp"]
+  ingress_rules       = ["http-80-tcp","https-443-tcp"]
   egress_rules        = ["all-all"]
 }
 
@@ -15,6 +15,16 @@ resource "aws_security_group_rule" "http_to_chips" {
   description       = "HTTP from application, chs and test subnets"
   from_port         = 80
   to_port           = 80
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = concat(local.chs_cidrs, local.application_subnet_cidrs, local.test_cidrs)
+  security_group_id = module.internal_alb_security_group.security_group_id
+}
+
+resource "aws_security_group_rule" "https_to_chips" {
+  description       = "HTTPS from application, chs and test subnets"
+  from_port         = 443
+  to_port           = 443
   protocol          = "tcp"
   type              = "ingress"
   cidr_blocks       = concat(local.chs_cidrs, local.application_subnet_cidrs, local.test_cidrs)
@@ -48,9 +58,39 @@ module "internal_alb" {
     }
   ]
 
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = data.aws_acm_certificate.acm_cert.arn
+      
+      action_type  = "fixed-response"
+      fixed_response = {
+        status_code  = "503"
+        content_type = "text/plain"
+      }
+    }
+  ]
+
   http_tcp_listener_rules = [ 
     for index, env in var.environments : {
       http_tcp_listener_index = 0
+      priority                = env.number
+
+      actions = [
+        {
+          type               = "forward"
+          target_group_index = index
+          weight             = 100
+        }
+      ]
+      conditions = [{ host_headers = [format("%s-%s.*", var.application_type, env.name)] }]
+    }
+  ]
+
+  https_listener_rules = [ 
+    for index, env in var.environments : {
+      https_listener_index    = 0
       priority                = env.number
 
       actions = [

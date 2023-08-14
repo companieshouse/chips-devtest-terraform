@@ -71,5 +71,13 @@ environments = [
   {
     name = "cidev"
     number = "04"
+  },
+  {
+    name = "swadmin"
+    number = "05"
+  },
+  {
+    name = "ssopoc"
+    number = "06"
   }
 ]
