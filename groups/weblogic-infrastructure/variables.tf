@@ -148,6 +148,12 @@ variable "application_health_check_path" {
   description = "Target group health check path for application"
 }
 
+variable "domain_name" {
+  type        = string
+  default     = "*.companieshouse.gov.uk"
+  description = "Domain Name for ACM Certificate"
+}
+
 # ------------------------------------------------------------------------------
 # Environments
 # ------------------------------------------------------------------------------

@@ -71,6 +71,11 @@ data "vault_generic_secret" "nfs_mounts" {
   path = "applications/${var.aws_account}-${var.aws_region}/${var.application_type}/app/nfs_mounts"
 }
 
+data "aws_acm_certificate" "acm_cert" {
+  domain = var.domain_name
+  most_recent = true
+}
+
 data "aws_ami" "ami" {
   owners      = [data.vault_generic_secret.account_ids.data["development"]]
   most_recent = var.ami_name == "docker-ami-*" ? true : false
