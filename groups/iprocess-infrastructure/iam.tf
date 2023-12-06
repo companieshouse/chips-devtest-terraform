@@ -8,7 +8,8 @@ module "instance_profile" {
 
   kms_key_refs = [
     "alias/${var.account}/${var.region}/ebs",
-    local.ssm_kms_key_id
+    local.ssm_kms_key_id,
+    local.account_ssm_key_arn
   ]
 
   cw_log_group_arns = length(local.log_groups) > 0 ? [format(
@@ -47,6 +48,14 @@ module "instance_profile" {
       resources = ["*"]
       actions = [
         "cloudwatch:PutMetricData"
+      ]
+    },
+    {
+      sid       = "AllowReadOfParameterStore",
+      effect    = "Allow",
+      resources = ["arn:aws:ssm:${var.aws_region}:${data.aws_caller_identity.current.account_id}:parameter/${var.application}/${var.environment}/*"],
+      actions = [
+        "ssm:GetParameter*"
       ]
     }
   ]
