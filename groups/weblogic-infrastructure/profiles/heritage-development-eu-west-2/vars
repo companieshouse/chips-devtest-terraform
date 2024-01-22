@@ -79,5 +79,9 @@ environments = [
   {
     name = "ssopoc"
     number = "06"
+  },
+  {
+    name = "devops1"
+    number = "07"
   }
 ]
