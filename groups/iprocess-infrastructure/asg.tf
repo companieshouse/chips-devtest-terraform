@@ -67,7 +67,7 @@ resource "aws_security_group_rule" "db_events_from_rds" {
 
 # ASG Module
 module "asg" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.184"
+  source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.248"
 
   count = var.asg_count
 
@@ -82,10 +82,17 @@ module "asg" {
   ]
   root_block_device = [
     {
+      device_name = "/dev/sda1"
       volume_size = var.instance_root_volume_size
-      volume_type = "gp2"
+      volume_type = var.instance_root_volume_type
       encrypted   = true
-      iops        = 0
+    }
+  ]
+  block_device_mappings = [
+    {
+      device_name = "/dev/xvds"
+      volume_size = var.instance_swap_volume_size
+      encrypted   = true
     }
   ]
 
@@ -102,6 +109,7 @@ module "asg" {
   enable_instance_refresh        = var.enable_instance_refresh
   refresh_min_healthy_percentage = 50
   key_name                       = aws_key_pair.iprocess_app_keypair.key_name
+  enforce_imdsv2                 = var.enforce_imdsv2
   
   iam_instance_profile = module.instance_profile.aws_iam_instance_profile.name
   user_data_base64     = data.template_cloudinit_config.userdata_config.rendered
