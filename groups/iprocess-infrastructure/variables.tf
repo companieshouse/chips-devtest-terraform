@@ -103,7 +103,7 @@ variable "ami_name" {
 
 variable "instance_root_volume_size" {
   type        = number
-  default     = 40
+  default     = 100
   description = "Size of root volume attached to instances"
 }
 
