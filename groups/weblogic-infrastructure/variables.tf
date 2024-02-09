@@ -102,6 +102,36 @@ variable "instance_root_volume_size" {
   description = "Size of root volume attached to instances"
 }
 
+variable "instance_root_volume_throughput" {
+  type        = number
+  default     = 125
+  description = "The EC2 instance swap volume throughput (MiB/s)"
+}
+
+variable "instance_root_volume_iops" {
+  type        = number
+  default     = 3000
+  description = "The EC2 instance swap volume IOPS"
+}
+
+variable "instance_root_volume_type" {
+  type        = string
+  default     = "gp3"
+  description = "The EC2 instance swap volume type"
+}
+
+variable "instance_swap_volume_size" {
+  type        = number
+  default     = 5
+  description = "Size of swap volume attached to instances"
+}
+
+variable "enforce_imdsv2" {
+  description = "Whether to enforce use of IMDSv2 by setting http_tokens to required on the aws_launch_configuration"
+  type        = bool
+  default     = true
+}
+
 variable "enable_instance_refresh" {
   type        = bool
   default     = false
