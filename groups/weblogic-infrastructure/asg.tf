@@ -57,7 +57,7 @@ resource "aws_security_group_rule" "http_from_chips_control" {
 
 # ASG Module
 module "asg" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.184"
+  source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.247"
 
   count = var.asg_count
 
@@ -74,9 +74,17 @@ module "asg" {
   root_block_device = [
     {
       volume_size = var.instance_root_volume_size
-      volume_type = "gp2"
+      throughput  = var.instance_root_volume_throughput
+      iops        = var.instance_root_volume_iops
+      volume_type = var.instance_root_volume_type
       encrypted   = true
-      iops        = 0
+    }
+  ]
+  block_device_mappings = [
+    {
+      device_name = "/dev/xvdb"
+      encrypted   = true
+      volume_size = var.instance_swap_volume_size
     }
   ]
 
@@ -96,6 +104,7 @@ module "asg" {
   key_name                       = aws_key_pair.keypair.key_name
   termination_policies           = ["OldestLaunchConfiguration"]
   target_group_arns              = module.internal_alb.target_group_arns
+  enforce_imdsv2                 = var.enforce_imdsv2
   
   iam_instance_profile = module.instance_profile.aws_iam_instance_profile.name
   user_data_base64     = data.template_cloudinit_config.userdata_config.rendered
