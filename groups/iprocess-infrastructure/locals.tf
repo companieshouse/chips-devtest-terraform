@@ -34,6 +34,8 @@ locals {
     Environment     = var.environment
     Region          = var.aws_region
     Account         = var.aws_account
+    Repository      = "chips-devtest-terraform"
+    Service         = "CHIPS"
   }
 
   iprocess_app_deployment_ansible_inputs = {
