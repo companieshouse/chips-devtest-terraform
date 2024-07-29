@@ -113,3 +113,17 @@ data "template_cloudinit_config" "userdata_config" {
     content      = data.template_file.userdata.rendered
   }
 }
+
+data "aws_security_group" "ois_tuxedo" {
+  filter {
+    name   = "group-name"
+    values = ["common-ois-tuxedo-*"]
+  }
+}
+
+data "aws_security_group" "frontend_tuxedo" {
+  filter {
+    name   = "group-name"
+    values = ["chd-frontend-tuxedo-*"]
+  }
+}

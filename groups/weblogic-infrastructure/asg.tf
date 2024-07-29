@@ -55,6 +55,26 @@ resource "aws_security_group_rule" "http_from_chips_control" {
   security_group_id        = module.asg_security_group.security_group_id
 }
 
+resource "aws_security_group_rule" "http_from_ois_tuxedo" {
+  description              = "HTTP from ois tuxedo"
+  from_port                = 20100
+  to_port                  = 22075
+  protocol                 = "tcp"
+  type                     = "ingress"
+  source_security_group_id = data.aws_security_group.ois_tuxedo.id
+  security_group_id        = module.asg_security_group.security_group_id
+}
+
+resource "aws_security_group_rule" "http_from_frontend_tuxedo" {
+  description              = "HTTP from ois tuxedo"
+  from_port                = 20100
+  to_port                  = 22075
+  protocol                 = "tcp"
+  type                     = "ingress"
+  source_security_group_id = data.aws_security_group.frontend_tuxedo.id
+  security_group_id        = module.asg_security_group.security_group_id
+}
+
 # ASG Module
 module "asg" {
   source = "git@github.com:companieshouse/terraform-modules//aws/autoscaling-with-launch-template?ref=tags/1.0.247"
