@@ -52,9 +52,9 @@ variable "short_region" {
 # Environment Variables
 # ------------------------------------------------------------------------------
 
-variable "environment_name" {
+variable "e2e_name" {
   type        = string
-  description = "The name of the environment"
+  description = "The name of the e2e environment"
 }
 
 variable "application_type" {
@@ -137,6 +137,18 @@ variable "config_base_path_override" {
   type        = string
   description = "Path within the config bucket the application will use to retrieve configuration files"
   default     = "chips-e2e-configs"
+}
+
+variable "shutdown_schedule" {
+  type        = string
+  description = "Cron expression for the shutdown time - e.g. '20 00 * * 1-5' is 8pm Mon-Fri"
+  default     = "20 00 * * 1-5"
+}
+
+variable "startup_schedule" {
+  type        = string
+  description = "Cron expression for the startup time - e.g. '00 06 * * 1-5' is 6am Mon-Fri"
+  default     = "00 06 * * 1-5"
 }
 
 # ------------------------------------------------------------------------------

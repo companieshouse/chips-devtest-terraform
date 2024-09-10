@@ -30,14 +30,14 @@ provider "vault" {
 module "chips-app" {
   source = "git@github.com:companieshouse/terraform-modules//aws/chips-app?ref=feature/chp53-update-chips-app-module"
 
-  application                        = "chips-${var.environment_name}"
+  application                        = local.application_name
   application_type                   = var.application_type
   aws_region                         = var.aws_region
   aws_account                        = var.aws_account
   short_account                      = var.short_account
   short_region                       = var.short_region
   environment                        = "development"
-  app_instance_name_override         = var.environment_name
+  app_instance_name_override         = var.e2e_name
   config_base_path_override          = var.config_base_path_override
   ami_name                           = var.ami_name
   asg_count                          = var.asg_count
