@@ -141,8 +141,8 @@ variable "config_base_path_override" {
 
 variable "shutdown_schedule" {
   type        = string
-  description = "Cron expression for the shutdown time - e.g. '20 00 * * 1-5' is 8pm Mon-Fri"
-  default     = "20 00 * * 1-5"
+  description = "Cron expression for the shutdown time - e.g. '00 20 * * 1-5' is 8pm Mon-Fri"
+  default     = "00 20 * * 1-5"
 }
 
 variable "startup_schedule" {
