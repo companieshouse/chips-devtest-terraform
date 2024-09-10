@@ -34,8 +34,8 @@ module "chips-app" {
   application_type                   = var.application_type
   aws_region                         = var.aws_region
   aws_account                        = var.aws_account
-  account                            = var.account
-  region                             = var.region
+  account                            = var.short_account
+  region                             = var.short_region
   environment                        = "development"
   app_instance_name_override         = var.environment_name
   config_base_path_override          = var.config_base_path_override
