@@ -148,7 +148,7 @@ variable "shutdown_schedule" {
 variable "startup_schedule" {
   type        = string
   description = "Cron expression for the startup time - e.g. '00 06 * * 1-5' is 6am Mon-Fri"
-  default     = "00 06 * * 1-5"
+  default     = "05 07 * * 1-5"
 }
 
 # ------------------------------------------------------------------------------
