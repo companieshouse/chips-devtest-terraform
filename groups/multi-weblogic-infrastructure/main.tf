@@ -51,6 +51,8 @@ module "chips-app" {
   enable_sns_topic                   = var.enable_sns_topic
   ssh_access_security_group_patterns = var.ssh_access_security_group_patterns
   test_access_enable                 = true
+  shutdown_schedule                  = var.shutdown_schedule
+  startup_schedule                   = var.startup_schedule
 
   additional_ingress_with_cidr_blocks = [
     {
