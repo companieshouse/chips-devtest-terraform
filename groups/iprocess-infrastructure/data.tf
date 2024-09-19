@@ -14,17 +14,11 @@ data "aws_subnet_ids" "application" {
   }
 }
 
-data "aws_security_groups" "spo_access_group_ids" {
-  for_each = toset(var.spo_access_sg_patterns)
+data "aws_security_group" "chips_devtest_app" {
   filter {
     name   = "group-name"
-    values = [each.key]
+    values = ["sgr-chips-devtest-asg-001-*"]
   }
-}
-
-data "aws_security_group" "spo_access_groups" {
-  for_each = toset(local.spo_access_source_sg_ids)
-  id       = each.key
 }
 
 data "aws_security_group" "iprocess_rds" {

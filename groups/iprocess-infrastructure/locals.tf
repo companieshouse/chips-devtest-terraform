@@ -16,9 +16,6 @@ locals {
   security_s3_data            = data.vault_generic_secret.security_s3_buckets.data
   session_manager_bucket_name = local.security_s3_data["session-manager-bucket-name"]
 
-  spo_access_source_sg_ids = flatten([for sg in data.aws_security_groups.spo_access_group_ids : sg.ids])
-  spo_access_source_groups = {for group in data.aws_security_group.spo_access_groups : group.tags.Name => group.id}
-
   cloudwatch_instance_logs = {
     for log, map in var.cloudwatch_logs :
     log => merge(map, {
