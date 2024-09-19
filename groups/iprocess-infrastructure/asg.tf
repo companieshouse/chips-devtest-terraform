@@ -45,13 +45,15 @@ resource "aws_security_group_rule" "spo_from_onprem_weblogic" {
   security_group_id = module.asg_security_group.security_group_id
 }
 
-resource "aws_security_group_rule" "spo_from_cloud_weblogic" {
-  description              = "Oracle DB inbound port range"
+resource "aws_security_group_rule" "spo_source_sg_access" {
+  for_each = tomap(local.spo_access_source_groups)
+
+  description              = "Access to SPO ports from ${each.key}"
   from_port                = 30511
   to_port                  = 30514
   protocol                 = "tcp"
   type                     = "ingress"
-  source_security_group_id = data.aws_security_group.chips_devtest_app.id
+  source_security_group_id = each.value
   security_group_id        = module.asg_security_group.security_group_id
 }
 

@@ -139,8 +139,8 @@ variable "default_log_group_retention_in_days" {
 
 variable "cloudwatch_logs" {
   type        = map(any)
-  description = "Map of log file information; used to create log groups, IAM permissions and passed to the application to configure remote logging"
   default     = {}
+  description = "Map of log file information; used to create log groups, IAM permissions and passed to the application to configure remote logging"
 }
 
 variable "cloudwatch_namespace" {
@@ -151,6 +151,12 @@ variable "cloudwatch_namespace" {
 
 variable "enable_sns_topic" {
   type        = bool
-  description = "A boolean value to indicate whether to deploy SNS topic configuration for CloudWatch actions"
   default     = false
+  description = "A boolean value to indicate whether to deploy SNS topic configuration for CloudWatch actions"
+}
+
+variable "spo_access_sg_patterns" {
+  type        = list(string)
+  default     = []
+  description = "List of source security group name patterns that will have access to the SPO ports"
 }
