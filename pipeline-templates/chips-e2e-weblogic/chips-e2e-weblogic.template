@@ -1,0 +1,320 @@
+---
+
+# Groups -----------------------------------------------------------------------
+
+groups:
+
+- name: all
+  jobs:
+    - create-webhooks
+    - delete-webhooks
+    - terraform-release
+    {{#ENVIRONMENTS}}
+    - {{.}}-plan
+    - {{.}}-apply
+    {{/ENVIRONMENTS}}
+
+- name: release
+  jobs:
+    - terraform-release
+
+- name: environments
+  jobs:
+    {{#ENVIRONMENTS}}
+    - {{.}}-plan
+    - {{.}}-apply
+    {{/ENVIRONMENTS}}
+
+# Jobs -------------------------------------------------------------------------
+
+jobs:
+## Create-webhooks
+- name: create-webhooks
+  plan:
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-devtest-terraform
+      resource_name: terraform-release-tag
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: MGFhMzAyOWJlNjlkODgxNjE2Mzc1NGU2
+      operation: create
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-devtest-terraform
+      resource_name: terraform-code
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: ZjZhNzI3MDQxMzczZTQzMDdmNDkzMDll
+      operation: create
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: docker-ami
+      resource_name: docker-ami-release-version
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: YzhkYTVlN2I0YTA0NzI5OTgzOTc2N2Q4
+      operation: create
+      events: [push]
+
+## Delete-webhooks
+- name: delete-webhooks
+  plan:
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-devtest-terraform
+      resource_name: terraform-release-tag
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: MGFhMzAyOWJlNjlkODgxNjE2Mzc1NGU2
+      operation: delete
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-devtest-terraform
+      resource_name: terraform-code
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: ZjZhNzI3MDQxMzczZTQzMDdmNDkzMDll
+      operation: delete
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: docker-ami
+      resource_name: docker-ami-release-version
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: YzhkYTVlN2I0YTA0NzI5OTgzOTc2N2Q4
+      operation: delete
+      events: [push]
+
+## Terraform-release
+- name: terraform-release
+  on_failure:
+    put: notify-slack
+    params:
+      attachments_file: concourse-resources/templates/slack/failure-message.json
+  plan:
+  - get: concourse-resources
+  - get: terraform-code
+    trigger: true
+  - get: terraform-release-tag
+  - task: verify-not-release
+    file: concourse-resources/tasks/release/verify-not-release/task.yml
+    input_mapping:
+      release-tag: terraform-release-tag
+      source-code: terraform-code
+    params:
+      PREFIX: 
+  - task: calculate-new-version
+    file: concourse-resources/tasks/release/calculate-new-version/task.yml
+    input_mapping:
+      release-tag: terraform-release-tag
+      source-code: terraform-code
+    params:
+      PREFIX: "multi-weblogic-infrastructure-"
+      VERSION_FILE_PATH: "groups/multi-weblogic-infrastructure/"
+  - put: terraform-github-release
+    params:
+      commitish: terraform-code/.git/ref
+      name: version/version
+      tag: version/version
+
+## Plan and apply jobs for every e2e environment -------------------------------
+{{#ENVIRONMENTS}}
+
+# {{.}} plan
+- name: {{.}}-plan
+  on_failure:
+    put: notify-slack
+    params:
+      attachments_file: concourse-resources/templates/slack/failure-message.json
+      channel: chips-team-pipelines
+  serial_groups: [{{.}}]
+  plan:
+  - get: concourse-resources
+  - get: terraform-code
+    passed: [terraform-release]
+  - get: docker-ami-release-version
+  - task: set-terraform-variables
+    config:
+      platform: linux
+      inputs:
+        - name: docker-ami-release-version
+      image_resource:
+        type: registry-image
+        source:
+          aws_access_key_id: ((secrets.shared-services-aws-access-key-id))
+          aws_secret_access_key: ((secrets.shared-services-aws-secret-access-key))
+          aws_region: eu-west-2
+          repository: ci-bash-task
+          tag: latest
+      outputs:
+        - name: terraform-variables
+      run:
+        path: bash
+        args:
+        - -ec
+        - |
+          cat <<EOF >> terraform-variables/variables.tfvars
+          vault_username=((secrets.hashicorp-vault-username))
+          vault_password=((secrets.hashicorp-vault-password))
+          ami_name=docker-ami-$(< docker-ami-release-version/number)
+          EOF
+
+  - task: generate-plan
+    file: concourse-resources/tasks/provisioning/terraform/generate-plan/task.yml
+    input_mapping:
+      terraform-code: terraform-code
+    params:
+      AWS_ACCESS_KEY_ID: ((secrets.heritage-development-aws-access-key-id))
+      AWS_PROFILE: "heritage-development-eu-west-2"
+      AWS_SECRET_ACCESS_KEY: ((secrets.heritage-development-aws-secret-access-key))
+      ENVIRONMENT: {{.}}
+      GROUP: multi-weblogic-infrastructure
+      TERRAFORM_ROOT: ""
+      TERRAFORM_VERSION: 1.3
+      VAULT_ADDR: ((secrets.hashicorp-vault-url))
+      GITHUB_PRIVATE_KEY: ((secrets.github-ssh-key))
+  - put: terraform-plan-{{.}}
+    params:
+      file: artifacts/plan-*.zip
+
+# {{.}} apply
+- name: {{.}}-apply
+  on_failure:
+    put: notify-slack
+    params:
+      attachments_file: concourse-resources/templates/slack/failure-message.json
+      channel: chips-team-pipelines
+  serial_groups: [{{.}}]
+  plan:
+  - get: concourse-resources
+    passed: [{{.}}-plan]
+  - get: terraform-plan-{{.}}
+    passed: [{{.}}-plan]
+  - get: docker-ami-release-version
+    passed: [{{.}}-plan]
+  - task: apply-plan
+    file: concourse-resources/tasks/provisioning/terraform/apply-plan/task.yml
+    input_mapping:
+      terraform-artifact: terraform-plan-{{.}}
+    params:
+      AWS_ACCESS_KEY_ID: ((secrets.heritage-development-aws-access-key-id))
+      AWS_PROFILE: "heritage-development-eu-west-2"
+      AWS_SECRET_ACCESS_KEY: ((secrets.heritage-development-aws-secret-access-key))
+      ENVIRONMENT: {{.}}
+      GROUP: multi-weblogic-infrastructure
+      TERRAFORM_ROOT: ""
+      TERRAFORM_VERSION: 1.3
+      VAULT_ADDR: ((secrets.hashicorp-vault-url))
+
+{{/ENVIRONMENTS}}
+## Resources -------------------------------------------------------------------
+resources:
+
+{{#ENVIRONMENTS}}
+# {{.}} resources
+- name: terraform-plan-{{.}}
+  type: s3
+  icon: bitbucket
+  source:
+    bucket: heritage-development-eu-west-2.terraform-plans.ch.gov.uk
+    region_name: eu-west-2
+    private: true
+    regexp: chips-devtest-terraform/{{.}}/plan-(.*).zip
+    access_key_id: ((secrets.heritage-development-aws-access-key-id))
+    secret_access_key: ((secrets.heritage-development-aws-secret-access-key))
+
+{{/ENVIRONMENTS}}
+# shared resources
+- name: terraform-code
+  type: git
+  webhook_token: ZjZhNzI3MDQxMzczZTQzMDdmNDkzMDll
+  icon: github
+  source:
+    uri: git@github.com:companieshouse/chips-devtest-terraform.git
+    branch: feature/chp53-multi-weblogic-infrastructure
+    private_key: ((secrets.github-ssh-key))
+    paths:
+      - groups/multi-weblogic-infrastructure/*
+
+- name: terraform-release-tag
+  type: ci-resource-type-release-tag
+  webhook_token: MGFhMzAyOWJlNjlkODgxNjE2Mzc1NGU2
+  icon: tag
+  source:
+    uri: git@github.com:companieshouse/chips-devtest-terraform.git
+    branch: main
+    private_key: ((secrets.github-ssh-key))
+    tag_filter: 'multi-weblogic-infrastructure-[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
+
+- name: terraform-github-release
+  type: github-release
+  icon: package-variant-closed
+  source:
+    owner: companieshouse
+    repository: chips-devtest-terraform
+    access_token: ((secrets.github-release-token))
+
+- name: docker-ami-release-version
+  type: ci-resource-type-release-tag
+  webhook_token: YzhkYTVlN2I0YTA0NzI5OTgzOTc2N2Q4
+  icon: tag
+  source:
+    uri: git@github.com:companieshouse/docker-ami.git
+    branch: main
+    tag_filter: '^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
+    private_key: ((secrets.github-ssh-key))
+
+- name: webhook-api
+  type: github-webhook-resource
+  source:
+    github_api: https://api.github.com
+    github_token: ((secrets.github-webhook-token))
+
+- name: concourse-resources
+  type: git
+  icon: github
+  source:
+    uri: git@github.com:companieshouse/ci-concourse-resources.git
+    branch: shared-services
+    private_key: ((secrets.github-ssh-key))
+
+- name: notify-slack
+  type: slack-notification
+  source:
+    url: ((secrets.slack-webhook))
+    disable: ((secrets.disable-slack-notifications))
+
+# Resource Types ---------------------------------------------------------------
+resource_types:
+
+- name: ci-resource-type-release-tag
+  type: registry-image
+  source:
+    aws_access_key_id: ((secrets.shared-services-aws-access-key-id))
+    aws_secret_access_key: ((secrets.shared-services-aws-secret-access-key))
+    aws_region: eu-west-2
+    repository: ci-resource-type-release-tag
+    tag: latest
+
+- name: github-webhook-resource
+  type: registry-image
+  source:
+    aws_access_key_id: ((secrets.shared-services-aws-access-key-id))
+    aws_secret_access_key: ((secrets.shared-services-aws-secret-access-key))
+    aws_region: eu-west-2
+    repository: github-webhook-resource
+    tag: latest
+
+- name: slack-notification
+  type: registry-image
+  source:
+    aws_access_key_id: ((secrets.shared-services-aws-access-key-id))
+    aws_secret_access_key: ((secrets.shared-services-aws-secret-access-key))
+    aws_region: eu-west-2
+    repository: ci-slack-notification-resource
+    tag: latest
