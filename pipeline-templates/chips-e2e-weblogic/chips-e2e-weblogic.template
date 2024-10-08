@@ -236,7 +236,7 @@ resources:
   icon: github
   source:
     uri: git@github.com:companieshouse/chips-devtest-terraform.git
-    branch: feature/chp53-multi-weblogic-infrastructure
+    branch: main
     private_key: ((secrets.github-ssh-key))
     paths:
       - groups/multi-weblogic-infrastructure/*
