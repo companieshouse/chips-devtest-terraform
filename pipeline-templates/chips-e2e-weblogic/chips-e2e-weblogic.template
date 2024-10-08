@@ -8,6 +8,8 @@ groups:
   jobs:
     - create-webhooks
     - delete-webhooks
+    - release-e2e-configs
+    - sync-e2e-configs
     - terraform-release
     {{#ENVIRONMENTS}}
     - {{.}}-plan
@@ -16,7 +18,13 @@ groups:
 
 - name: release
   jobs:
+    - release-e2e-configs
     - terraform-release
+
+- name: s3-sync
+  jobs:
+    - release-e2e-configs
+    - sync-e2e-configs
 
 - name: environments
   jobs:
@@ -58,6 +66,24 @@ jobs:
       webhook_token: YzhkYTVlN2I0YTA0NzI5OTgzOTc2N2Q4
       operation: create
       events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-e2e-scripts
+      resource_name: release-tag-e2e-configs
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: OWIwYjNhMzJiMDNmODUzMmI5MzcwYzVh
+      operation: create
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-e2e-scripts
+      resource_name: source-code-e2e-configs
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: YjgxM2QwN2M2OWEyYTFkMTczNTQ3Yzlm
+      operation: create
+      events: [push]
 
 ## Delete-webhooks
 - name: delete-webhooks
@@ -89,6 +115,83 @@ jobs:
       webhook_token: YzhkYTVlN2I0YTA0NzI5OTgzOTc2N2Q4
       operation: delete
       events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-e2e-scripts
+      resource_name: release-tag-e2e-configs
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: OWIwYjNhMzJiMDNmODUzMmI5MzcwYzVh
+      operation: delete
+      events: [push]
+  - put: webhook-api
+    params:
+      org: companieshouse
+      repo: chips-e2e-scripts
+      resource_name: source-code-e2e-configs
+      webhook_target_host: ((secrets.webhook-target-url))
+      webhook_token: YjgxM2QwN2M2OWEyYTFkMTczNTQ3Yzlm
+      operation: delete
+      events: [push]
+
+## Release E2E configs
+- name: release-e2e-configs
+  plan:
+  - get: concourse-resources
+  - get: source-code-e2e-configs
+    trigger: true
+  - get: release-tag-e2e-configs
+
+  - task: verify-not-release
+    file: concourse-resources/tasks/release/verify-not-release/task.yml
+    on_failure:
+      put: notify-slack
+      params:
+        attachments_file: concourse-resources/templates/slack/failure-message.json
+    input_mapping:
+       source-code: source-code-e2e-configs
+       release-tag: release-tag-e2e-configs
+    params:
+      PREFIX: chips-e2e-configs-
+
+  - task: calculate-new-version
+    file: concourse-resources/tasks/release/calculate-new-version/task.yml
+    on_failure:
+      put: notify-slack
+      params:
+        attachments_file: concourse-resources/templates/slack/failure-message.json
+        channel: chips-team-pipelines
+    input_mapping:
+        source-code: source-code-e2e-configs
+        release-tag: release-tag-e2e-configs
+    params:
+      PREFIX: chips-e2e-configs-
+      VERSION_FILE_PATH: cloud/chips-e2e-configs
+
+  - put: github-release-e2e-configs
+    params:
+      commitish: source-code-e2e-configs/.git/ref
+      name: version/version
+      tag: version/version
+
+- name: sync-e2e-configs
+  plan:
+  - get: concourse-resources
+  - get: source-code-e2e-configs
+    trigger: true
+    passed: [release-e2e-configs]
+
+  - task: s3-vars-e2e-configs
+    file: concourse-resources/tasks/s3/synchronise-into-bucket/task.yml
+    input_mapping: {local-directory: source-code-e2e-configs}
+    params:
+      AWS_ACCESS_KEY_ID: ((secrets.heritage-development-aws-access-key-id))
+      AWS_REGION: eu-west-2
+      AWS_SECRET_ACCESS_KEY: ((secrets.heritage-development-aws-secret-access-key))
+      BUCKET: heritage-development.eu-west-2.configs.ch.gov.uk
+      BUCKET_PATH: chips-e2e-configs
+      DELETE: false
+      LOCAL_SUBPATH: cloud/chips-e2e-configs
 
 ## Terraform-release
 - name: terraform-release
@@ -230,13 +333,45 @@ resources:
 
 {{/ENVIRONMENTS}}
 # shared resources
+- name: source-code-e2e-configs
+  type: git
+  webhook_token: YjgxM2QwN2M2OWEyYTFkMTczNTQ3Yzlm
+  icon: github
+  source:
+    uri: git@github.com:companieshouse/chips-e2e-scripts.git
+    branch: master
+    version: latest
+    private_key: ((secrets.github-ssh-key))
+    paths:
+      - cloud/chips-e2e-configs/*
+
+- name: github-release-e2e-configs
+  type: github-release
+  icon: package-variant-closed
+  source:
+    owner: companieshouse
+    repository: chips-e2e-scripts
+    access_token: ((secrets.github-release-token))
+    release: true
+    tag_filter: '^chips-e2e-configs-[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
+
+- name: release-tag-e2e-configs
+  type: ci-resource-type-release-tag
+  webhook_token: OWIwYjNhMzJiMDNmODUzMmI5MzcwYzVh
+  icon: tag
+  source:
+    uri: git@github.com:companieshouse/chips-e2e-scripts.git
+    branch: master
+    private_key: ((secrets.github-ssh-key))
+    tag_filter: '^chips-e2e-configs-[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$'
+
 - name: terraform-code
   type: git
   webhook_token: ZjZhNzI3MDQxMzczZTQzMDdmNDkzMDll
   icon: github
   source:
     uri: git@github.com:companieshouse/chips-devtest-terraform.git
-    branch: feature/chp53-multi-weblogic-infrastructure
+    branch: main
     private_key: ((secrets.github-ssh-key))
     paths:
       - groups/multi-weblogic-infrastructure/*
