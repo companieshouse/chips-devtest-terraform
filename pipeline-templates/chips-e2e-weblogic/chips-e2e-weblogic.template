@@ -180,10 +180,34 @@ jobs:
   - get: source-code-e2e-configs
     trigger: true
     passed: [release-e2e-configs]
+  - get: github-release-e2e-configs
+
+  - task: update-version-file
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          aws_access_key_id: ((secrets.shared-services-aws-access-key-id))
+          aws_secret_access_key: ((secrets.shared-services-aws-secret-access-key))
+          repository: ((secrets.shared-services-eu-west-2-docker-registry))/ci-bash-task
+          tag: latest
+      inputs:
+        - name: source-code-e2e-configs
+        - name: github-release-e2e-configs
+      outputs:
+        - name: updated-source-code-e2e-configs
+      run:
+        path: bash
+        args:
+        - -ec
+        - |
+          cp -r source-code-e2e-configs/* updated-source-code-e2e-configs
+          cat ./github-release-e2e-configs/tag > updated-source-code-e2e-configs/cloud/chips-e2e-configs/version
 
   - task: s3-vars-e2e-configs
     file: concourse-resources/tasks/s3/synchronise-into-bucket/task.yml
-    input_mapping: {local-directory: source-code-e2e-configs}
+    input_mapping: {local-directory: updated-source-code-e2e-configs}
     params:
       AWS_ACCESS_KEY_ID: ((secrets.heritage-development-aws-access-key-id))
       AWS_REGION: eu-west-2
