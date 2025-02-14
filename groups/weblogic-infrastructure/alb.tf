@@ -44,6 +44,12 @@ module "internal_alb" {
 
   security_groups = [module.internal_alb_security_group.security_group_id]
   subnets         = data.aws_subnet_ids.application.ids
+  
+  access_logs = {
+    bucket = local.elb_access_logs_bucket_name
+    prefix = local.elb_access_logs_prefix
+    enabled = true
+  }
 
   http_tcp_listeners = [
     {
