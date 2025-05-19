@@ -39,7 +39,7 @@ module "internal_alb" {
   vpc_id                     = data.aws_vpc.vpc.id
   internal                   = true
   load_balancer_type         = "application"
-  enable_deletion_protection = false
+  enable_deletion_protection = true
   idle_timeout               = 180
 
   security_groups = [module.internal_alb_security_group.security_group_id]
