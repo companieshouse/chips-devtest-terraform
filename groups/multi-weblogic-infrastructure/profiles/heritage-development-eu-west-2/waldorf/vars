@@ -1,1 +1,2 @@
-e2e_name = "waldorf"
+e2e_name  = "waldorf"
+asg_count = 2
