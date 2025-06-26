@@ -37,7 +37,7 @@ module "chips-app" {
   short_account                      = var.short_account
   short_region                       = var.short_region
   environment                        = "development"
-  app_instance_name_override         = var.e2e_name
+  app_instance_name_override         = var.asg_count > 1 ? null : var.e2e_name
   config_base_path_override          = var.config_base_path_override
   ami_name                           = var.ami_name
   asg_count                          = var.asg_count
