@@ -17,6 +17,7 @@ instance_size = "r5.large"
 enable_instance_refresh = true
 
 spo_access_sg_patterns = [
+  "development-chips-e2e-*",
   "sgr-chips-*-asg-001-*"
 ]
 
