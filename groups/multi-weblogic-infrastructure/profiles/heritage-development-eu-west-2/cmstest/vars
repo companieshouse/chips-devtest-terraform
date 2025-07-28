@@ -1,5 +1,2 @@
 e2e_name = "cmstest"
 
-# Disable overnight shutdown
-shutdown_schedule = null
-startup_schedule = null
