@@ -142,13 +142,13 @@ variable "config_base_path_override" {
 variable "shutdown_schedule" {
   type        = string
   description = "Cron expression for the shutdown time - e.g. '00 20 * * 1-5' is 8pm Mon-Fri"
-  default     = "00 20 * * 1-5"
+  default     = null
 }
 
 variable "startup_schedule" {
   type        = string
   description = "Cron expression for the startup time - e.g. '00 06 * * 1-5' is 6am Mon-Fri"
-  default     = "05 07 * * 1-5"
+  default     = null
 }
 
 # ------------------------------------------------------------------------------
@@ -322,6 +322,7 @@ variable "bootstrap_commands" {
   type        = list(string)
   default     = [
     "su -l ec2-user weblogic-pre-bootstrap.sh",
+    "su -l ec2-user load-cached-images.sh",
     "su -l ec2-user bootstrap"
   ]
   description = "List of bootstrap commands to run during the instance startup"
