@@ -321,6 +321,7 @@ variable "enable_sns_topic" {
 variable "bootstrap_commands" {
   type        = list(string)
   default     = [
+    "su -l ec2-user set-container-alias.sh build build weblogic",
     "su -l ec2-user weblogic-pre-bootstrap.sh",
     "su -l ec2-user load-cached-images.sh",
     "su -l ec2-user bootstrap"
