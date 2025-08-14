@@ -60,7 +60,7 @@ module "chips-app" {
       to_port     = 49078
       protocol    = "tcp"
       description = "Tuxedo ports"
-      cidr_blocks = join(",", [for s in module.chips-app.application_subnets : s.cidr_block])
+      cidr_blocks = join(",", concat([for s in module.chips-app.application_subnets : s.cidr_block], local.on_premise_cidr_ranges))
     },
     {
       from_port   = 21010
