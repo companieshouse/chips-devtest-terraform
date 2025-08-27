@@ -56,6 +56,13 @@ module "chips-app" {
 
   additional_ingress_with_cidr_blocks = [
     {
+      from_port   = 40000
+      to_port     = 40000
+      protocol    = "tcp"
+      description = "JWDB debugger port"
+      cidr_blocks = join(",", concat([for s in module.chips-app.application_subnets : s.cidr_block], local.on_premise_cidr_ranges))
+    },
+    {
       from_port   = 49075
       to_port     = 49078
       protocol    = "tcp"
