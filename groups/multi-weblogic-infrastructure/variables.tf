@@ -308,6 +308,30 @@ variable "cloudwatch_logs" {
       file_name = "eai-eaidaemon-*.log"
       log_group_retention = 7
     }
+
+    "build-failure-log" = {
+      file_path = "NFSPATH/running-servers/buildlogs"
+      file_name = "build_failure.log"
+      log_group_retention = 7
+    }
+
+    "full-monty-build-log" = {
+      file_path = "NFSPATH/running-servers/buildlogs"
+      file_name = "full-monty-*.log"
+      log_group_retention = 7
+    }
+
+    "quick-build-deploy-log" = {
+      file_path = "NFSPATH/running-servers/buildlogs"
+      file_name = "quick-build-deploy-*.log"
+      log_group_retention = 7
+    }
+
+    "full-build-test-deploy-log" = {
+      file_path = "NFSPATH/running-servers/buildlogs"
+      file_name = "full-build-test-deploy-*.log"
+      log_group_retention = 7
+    }
   }
   description = "Map of log file information; used to create log groups, IAM permissions and passed to the application to configure remote logging"
 }
