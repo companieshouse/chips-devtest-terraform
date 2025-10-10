@@ -12,7 +12,7 @@ application = "chips-devtest"
 
 # ASG settings
 asg_count = 1
-instance_size = "z1d.3xlarge"
+instance_size = "z1d.xlarge"
 enable_instance_refresh = false
 
 # NFS Mounts
@@ -61,32 +61,12 @@ environments = [
     number = "01"
   },
   {
-    name = "training1"
-    number = "02"
-  },
-  {
     name = "training2"
     number = "03"
   },
   {
-    name = "cidev"
-    number = "04"
-  },
-  {
-    name = "swadmin"
-    number = "05"
-  },
-  {
     name = "ssopoc"
     number = "06"
-  },
-  {
-    name = "devops1"
-    number = "07"
-  },
-  {
-    name = "accounts-poc"
-    number = "08"
   },
   {
     name = "cidevtux"
