@@ -28,7 +28,7 @@ provider "vault" {
 }
 
 module "chips-app" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/chips-app?ref=tags/1.0.320"
+  source = "git@github.com:companieshouse/terraform-modules//aws/chips-app?ref=tags/1.0.359"
 
   application                        = local.application_name
   application_type                   = var.application_type
@@ -51,6 +51,7 @@ module "chips-app" {
   enable_sns_topic                   = var.enable_sns_topic
   ssh_access_security_group_patterns = var.ssh_access_security_group_patterns
   test_access_enable                 = true
+  shared_services_concourse_access   = true
   shutdown_schedule                  = var.shutdown_schedule
   startup_schedule                   = var.startup_schedule
 
