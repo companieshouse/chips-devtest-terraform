@@ -203,133 +203,133 @@ variable "default_log_group_retention_in_days" {
 }
 
 variable "cloudwatch_logs" {
-  type        = map(any)
-  default     = {
+  type = map(any)
+  default = {
     "audit.log" = {
-      file_path = "/var/log/audit"
+      file_path           = "/var/log/audit"
       log_group_retention = 7
     }
 
     "messages" = {
-      file_path = "/var/log"
+      file_path           = "/var/log"
       log_group_retention = 7
     }
-    
+
     "secure" = {
-      file_path = "/var/log"
+      file_path           = "/var/log"
       log_group_retention = 7
     }
 
     "yum.log" = {
-      file_path = "/var/log"
+      file_path           = "/var/log"
       log_group_retention = 7
     }
 
     "ssm-errors" = {
-      file_path = "/var/log/amazon/ssm"
-      file_name = "errors.log"
+      file_path           = "/var/log/amazon/ssm"
+      file_name           = "errors.log"
       log_group_retention = 7
     }
 
     "ssm-agent" = {
-      file_path = "/var/log/amazon/ssm"
-      file_name = "amazon-ssm-agent.log"
+      file_path           = "/var/log/amazon/ssm"
+      file_name           = "amazon-ssm-agent.log"
       log_group_retention = 7
     }
 
     "apache-access" = {
-      file_path = "NFSPATH/running-servers/apache"
-      file_name = "access.log"
+      file_path           = "NFSPATH/running-servers/apache"
+      file_name           = "access.log"
       log_group_retention = 7
     }
 
     "apache-error" = {
-      file_path = "NFSPATH/running-servers/apache"
-      file_name = "error.log"
+      file_path           = "NFSPATH/running-servers/apache"
+      file_name           = "error.log"
       log_group_retention = 7
     }
 
     "apache-admin-access" = {
-      file_path = "NFSPATH/running-servers/apache"
-      file_name = "admin-access.log"
+      file_path           = "NFSPATH/running-servers/apache"
+      file_name           = "admin-access.log"
       log_group_retention = 7
     }
-    
+
     "apache-admin-error" = {
-      file_path = "NFSPATH/running-servers/apache"
-      file_name = "admin-error.log"
+      file_path           = "NFSPATH/running-servers/apache"
+      file_name           = "admin-error.log"
       log_group_retention = 7
     }
 
     "wlserver1-access" = {
-      file_path = "NFSPATH/running-servers/wlserver1/logs"
-      file_name = "access.log"
+      file_path           = "NFSPATH/running-servers/wlserver1/logs"
+      file_name           = "access.log"
       log_group_retention = 7
     }
 
     "wlserver1-log" = {
-      file_path = "NFSPATH/running-servers/wlserver1/logs"
-      file_name = "wlserver1.log"
+      file_path           = "NFSPATH/running-servers/wlserver1/logs"
+      file_name           = "wlserver1.log"
       log_group_retention = 7
     }
 
     "wlserver1-out" = {
-      file_path = "NFSPATH/running-servers/wlserver1/logs"
-      file_name = "wlserver1.out"
+      file_path           = "NFSPATH/running-servers/wlserver1/logs"
+      file_name           = "wlserver1.out"
       log_group_retention = 7
     }
 
     "wladmin-access" = {
-      file_path = "NFSPATH/running-servers/wladmin/logs"
-      file_name = "access.log"
+      file_path           = "NFSPATH/running-servers/wladmin/logs"
+      file_name           = "access.log"
       log_group_retention = 7
     }
 
     "wladmin-log" = {
-      file_path = "NFSPATH/running-servers/wladmin/logs"
-      file_name = "wladmin.log"
+      file_path           = "NFSPATH/running-servers/wladmin/logs"
+      file_name           = "wladmin.log"
       log_group_retention = 7
     }
 
     "wladmin-chipsdomain" = {
-      file_path = "NFSPATH/running-servers/wladmin/logs"
-      file_name = "chipsdomain.log"
+      file_path           = "NFSPATH/running-servers/wladmin/logs"
+      file_name           = "chipsdomain.log"
       log_group_retention = 7
     }
 
     "sso1-log" = {
-      file_path = "NFSPATH/running-servers/ssodaemon"
-      file_name = "sso1-ssodaemon-*.log"
+      file_path           = "NFSPATH/running-servers/ssodaemon"
+      file_name           = "sso1-ssodaemon-*.log"
       log_group_retention = 7
     }
 
     "eaidaemon-log" = {
-      file_path = "NFSPATH/running-servers/eaidaemon"
-      file_name = "eai-eaidaemon-*.log"
+      file_path           = "NFSPATH/running-servers/eaidaemon"
+      file_name           = "eai-eaidaemon-*.log"
       log_group_retention = 7
     }
 
     "build-failure-log" = {
-      file_path = "NFSPATH/running-servers/buildlogs"
-      file_name = "build_failure.log"
+      file_path           = "NFSPATH/running-servers/buildlogs"
+      file_name           = "build_failure.log"
       log_group_retention = 7
     }
 
     "full-monty-build-log" = {
-      file_path = "NFSPATH/running-servers/buildlogs"
-      file_name = "full-monty-*.log"
+      file_path           = "NFSPATH/running-servers/buildlogs"
+      file_name           = "full-monty-*.log"
       log_group_retention = 7
     }
 
     "quick-build-deploy-log" = {
-      file_path = "NFSPATH/running-servers/buildlogs"
-      file_name = "quick-build-deploy-*.log"
+      file_path           = "NFSPATH/running-servers/buildlogs"
+      file_name           = "quick-build-deploy-*.log"
       log_group_retention = 7
     }
 
     "full-build-test-deploy-log" = {
-      file_path = "NFSPATH/running-servers/buildlogs"
-      file_name = "full-build-test-deploy-*.log"
+      file_path           = "NFSPATH/running-servers/buildlogs"
+      file_name           = "full-build-test-deploy-*.log"
       log_group_retention = 7
     }
   }
@@ -343,8 +343,8 @@ variable "enable_sns_topic" {
 }
 
 variable "bootstrap_commands" {
-  type        = list(string)
-  default     = [
+  type = list(string)
+  default = [
     "su -l ec2-user set-container-alias.sh build build weblogic",
     "su -l ec2-user weblogic-pre-bootstrap.sh",
     "su -l ec2-user load-cached-images.sh",
