@@ -185,6 +185,13 @@ variable "domain_name" {
   description = "Domain Name for ACM Certificate"
 }
 
+variable "concourse_access_enable" {
+  type        = bool
+  description = "Enable shared services concourse access"
+  default     = false
+}
+
+
 # ------------------------------------------------------------------------------
 # NFS Mount Variables
 # ------------------------------------------------------------------------------
