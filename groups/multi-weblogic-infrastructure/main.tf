@@ -28,7 +28,7 @@ provider "vault" {
 }
 
 module "chips-app" {
-  source = "git@github.com:companieshouse/terraform-modules//aws/chips-app?ref=tags/1.0.359"
+  source = "git@github.com:companieshouse/terraform-modules//aws/chips-app?ref=tags/1.0.363"
 
   application                        = local.application_name
   application_type                   = var.application_type
