@@ -1,1 +1,2 @@
 e2e_name = "cidev"
+concourse_access_enable = true
