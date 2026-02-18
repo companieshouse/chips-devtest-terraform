@@ -18,7 +18,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_chips-app"></a> [chips-app](#module\_chips-app) | git@github.com:companieshouse/terraform-modules//aws/chips-app | tags/1.0.363 |
+| <a name="module_chips-app"></a> [chips-app](#module\_chips-app) | git@github.com:companieshouse/terraform-modules//aws/chips-app | tags/1.0.368 |
 
 ## Resources
 
