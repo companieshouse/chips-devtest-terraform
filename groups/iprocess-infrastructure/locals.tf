@@ -39,6 +39,7 @@ locals {
     Account         = var.aws_account
     Repository      = "chips-devtest-terraform"
     Service         = "CHIPS"
+    ServiceTeam     = "CSI"
   }
 
   iprocess_app_deployment_ansible_inputs = {

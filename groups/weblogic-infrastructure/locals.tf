@@ -56,6 +56,7 @@ locals {
     Account         = var.aws_account
     Repository      = "chips-devtest-terraform"
     Service         = "CHIPS"
+    ServiceTeam     = "CSI"
   }
 
   userdata_ansible_inputs = {
