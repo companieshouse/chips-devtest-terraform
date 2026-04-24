@@ -17,7 +17,8 @@ instance_size = "r5.large"
 enable_instance_refresh = true
 
 spo_access_sg_patterns = [
-  "sgr-chips-devtest-asg-001-*"
+  "sgr-chips-devtest-asg-001-*",
+  "sgr-chips-training1-asg-001-*"
 ]
 
 cloudwatch_logs = {
