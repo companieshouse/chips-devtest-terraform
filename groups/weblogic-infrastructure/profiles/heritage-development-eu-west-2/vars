@@ -61,10 +61,6 @@ environments = [
     number = "01"
   },
   {
-    name = "training2"
-    number = "03"
-  },
-  {
     name = "ssopoc"
     number = "06"
   },
