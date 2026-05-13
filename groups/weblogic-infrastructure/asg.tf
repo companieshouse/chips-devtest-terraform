@@ -55,6 +55,16 @@ resource "aws_security_group_rule" "http_from_chips_control" {
   security_group_id        = module.asg_security_group.security_group_id
 }
 
+resource "aws_security_group_rule" "http_from_training2" {
+  description              = "HTTP from chips-training2"
+  from_port                = 20100
+  to_port                  = 22075
+  protocol                 = "tcp"
+  type                     = "ingress"
+  source_security_group_id = data.aws_security_group.chips_training2.id
+  security_group_id        = module.asg_security_group.security_group_id
+}
+
 resource "aws_security_group_rule" "http_from_ois_tuxedo" {
   description              = "HTTP from ois tuxedo"
   from_port                = 20100

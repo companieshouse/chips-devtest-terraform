@@ -51,6 +51,13 @@ data "aws_security_group" "chips_control" {
   }
 }
 
+data "aws_security_group" "chips_training2" {
+  filter {
+    name   = "group-name"
+    values = ["sgr-chips-training2-asg-001-*"]
+  }
+}
+
 data "vault_generic_secret" "ec2_data" {
   path = "applications/${var.aws_account}-${var.aws_region}/${var.application_type}/app/ec2"
 }
